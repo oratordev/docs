@@ -1,0 +1,206 @@
+---
+title: Indexing
+description: API endpoints for triggering and monitoring codebase indexing.
+---
+
+## Trigger Indexing
+
+Start an indexing job for a repository. Orator will analyze all files, build the knowledge graph, and detect patterns.
+
+```
+POST /v1/repos/:repoId/index
+```
+
+### Path Parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `repoId` | string | The repository ID |
+
+### Example Request
+
+```bash
+curl -X POST https://api.orator.dev/v1/repos/01JQKX8F7Y2M3N4P5R6S7T8V9W/index \
+  -H "Authorization: Bearer orator_abc123def456"
+```
+
+### Example Response
+
+```json
+{
+  "data": {
+    "id": "01JQKX9A1B2C3D4E5F6G7H8J9K",
+    "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+    "status": "queued",
+    "totalFiles": null,
+    "processedFiles": 0,
+    "error": null,
+    "startedAt": null,
+    "completedAt": null,
+    "createdAt": "2025-06-01T12:01:00.000Z"
+  },
+  "error": null
+}
+```
+
+### Notes
+
+- If an indexing job is already in progress for this repository, the API returns the existing job instead of creating a new one.
+- Indexing is incremental after the first run — Orator uses content hashes to detect changed files and only re-processes those.
+
+---
+
+## Get Index Status
+
+Check the status of the current or most recent indexing job for a repository.
+
+```
+GET /v1/repos/:repoId/index/status
+```
+
+### Path Parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `repoId` | string | The repository ID |
+
+### Example Request
+
+```bash
+curl https://api.orator.dev/v1/repos/01JQKX8F7Y2M3N4P5R6S7T8V9W/index/status \
+  -H "Authorization: Bearer orator_abc123def456"
+```
+
+### Response — Queued
+
+```json
+{
+  "data": {
+    "id": "01JQKX9A1B2C3D4E5F6G7H8J9K",
+    "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+    "status": "queued",
+    "totalFiles": null,
+    "processedFiles": 0,
+    "error": null,
+    "startedAt": null,
+    "completedAt": null,
+    "createdAt": "2025-06-01T12:01:00.000Z"
+  },
+  "error": null
+}
+```
+
+### Response — Processing
+
+```json
+{
+  "data": {
+    "id": "01JQKX9A1B2C3D4E5F6G7H8J9K",
+    "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+    "status": "processing",
+    "totalFiles": 247,
+    "processedFiles": 142,
+    "error": null,
+    "startedAt": "2025-06-01T12:01:02.000Z",
+    "completedAt": null,
+    "createdAt": "2025-06-01T12:01:00.000Z"
+  },
+  "error": null
+}
+```
+
+### Response — Completed
+
+```json
+{
+  "data": {
+    "id": "01JQKX9A1B2C3D4E5F6G7H8J9K",
+    "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+    "status": "completed",
+    "totalFiles": 247,
+    "processedFiles": 247,
+    "error": null,
+    "startedAt": "2025-06-01T12:01:02.000Z",
+    "completedAt": "2025-06-01T12:01:25.000Z",
+    "createdAt": "2025-06-01T12:01:00.000Z"
+  },
+  "error": null
+}
+```
+
+### Response — Failed
+
+```json
+{
+  "data": {
+    "id": "01JQKX9A1B2C3D4E5F6G7H8J9K",
+    "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+    "status": "failed",
+    "totalFiles": 247,
+    "processedFiles": 89,
+    "error": "Failed to parse src/generated/schema.ts: Unexpected token at line 4521",
+    "startedAt": "2025-06-01T12:01:02.000Z",
+    "completedAt": "2025-06-01T12:01:18.000Z",
+    "createdAt": "2025-06-01T12:01:00.000Z"
+  },
+  "error": null
+}
+```
+
+### Job Status Values
+
+| Status | Description |
+|---|---|
+| `queued` | Job is waiting to be processed |
+| `processing` | Job is actively analyzing files and building the knowledge graph |
+| `completed` | Job finished successfully — the repository is now indexed |
+| `failed` | Job encountered an error — check the `error` field for details |
+
+### Polling Example
+
+When triggering indexing programmatically, you can poll the status endpoint until the job completes:
+
+```typescript
+async function waitForIndex(repoId: string, apiKey: string): Promise<void> {
+  const baseUrl = "https://api.orator.dev";
+  const headers = {
+    Authorization: `Bearer ${apiKey}`,
+  };
+
+  // Trigger indexing
+  await fetch(`${baseUrl}/v1/repos/${repoId}/index`, {
+    method: "POST",
+    headers,
+  });
+
+  // Poll until complete
+  while (true) {
+    const res = await fetch(
+      `${baseUrl}/v1/repos/${repoId}/index/status`,
+      { headers }
+    );
+    const { data } = await res.json();
+
+    if (data.status === "completed") {
+      console.log(
+        `Indexing complete: ${data.processedFiles} files processed`
+      );
+      return;
+    }
+
+    if (data.status === "failed") {
+      throw new Error(`Indexing failed: ${data.error}`);
+    }
+
+    // Log progress
+    if (data.totalFiles) {
+      console.log(
+        `Progress: ${data.processedFiles}/${data.totalFiles} files`
+      );
+    }
+
+    // Wait 2 seconds before polling again
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+}
+```

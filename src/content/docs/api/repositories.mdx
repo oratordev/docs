@@ -1,0 +1,194 @@
+---
+title: Repositories
+description: API endpoints for managing repositories — create, list, get, and delete.
+---
+
+## Create a Repository
+
+Register a new repository with Orator.
+
+```
+POST /v1/repos
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `name` | string | Yes | Display name for the repository |
+| `url` | string | Yes | Git remote URL |
+| `defaultBranch` | string | No | Default branch name (default: `main`) |
+
+### Example Request
+
+```bash
+curl -X POST https://api.orator.dev/v1/repos \
+  -H "Authorization: Bearer orator_abc123def456" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-project",
+    "url": "https://github.com/you/my-project.git",
+    "defaultBranch": "main"
+  }'
+```
+
+### Example Response
+
+```json
+{
+  "data": {
+    "id": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+    "userId": "01JQKW1A2B3C4D5E6F7G8H9J0K",
+    "name": "my-project",
+    "url": "https://github.com/you/my-project.git",
+    "defaultBranch": "main",
+    "lastIndexedAt": null,
+    "indexStatus": "pending",
+    "createdAt": "2025-06-01T12:00:00.000Z",
+    "updatedAt": "2025-06-01T12:00:00.000Z"
+  },
+  "error": null
+}
+```
+
+---
+
+## List Repositories
+
+List all repositories for the authenticated user.
+
+```
+GET /v1/repos
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `page` | integer | `1` | Page number |
+| `perPage` | integer | `20` | Items per page (max 100) |
+
+### Example Request
+
+```bash
+curl https://api.orator.dev/v1/repos \
+  -H "Authorization: Bearer orator_abc123def456"
+```
+
+### Example Response
+
+```json
+{
+  "data": [
+    {
+      "id": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+      "userId": "01JQKW1A2B3C4D5E6F7G8H9J0K",
+      "name": "my-project",
+      "url": "https://github.com/you/my-project.git",
+      "defaultBranch": "main",
+      "lastIndexedAt": "2025-06-01T12:05:23.000Z",
+      "indexStatus": "indexed",
+      "createdAt": "2025-06-01T12:00:00.000Z",
+      "updatedAt": "2025-06-01T12:05:23.000Z"
+    },
+    {
+      "id": "01JQKY2G8H9J0K1L2M3N4P5Q6R",
+      "userId": "01JQKW1A2B3C4D5E6F7G8H9J0K",
+      "name": "another-repo",
+      "url": "https://github.com/you/another-repo.git",
+      "defaultBranch": "main",
+      "lastIndexedAt": null,
+      "indexStatus": "pending",
+      "createdAt": "2025-06-02T09:30:00.000Z",
+      "updatedAt": "2025-06-02T09:30:00.000Z"
+    }
+  ],
+  "meta": {
+    "total": 2,
+    "page": 1,
+    "perPage": 20
+  },
+  "error": null
+}
+```
+
+---
+
+## Get a Repository
+
+Get details for a specific repository.
+
+```
+GET /v1/repos/:repoId
+```
+
+### Path Parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `repoId` | string | The repository ID |
+
+### Example Request
+
+```bash
+curl https://api.orator.dev/v1/repos/01JQKX8F7Y2M3N4P5R6S7T8V9W \
+  -H "Authorization: Bearer orator_abc123def456"
+```
+
+### Example Response
+
+```json
+{
+  "data": {
+    "id": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+    "userId": "01JQKW1A2B3C4D5E6F7G8H9J0K",
+    "name": "my-project",
+    "url": "https://github.com/you/my-project.git",
+    "defaultBranch": "main",
+    "lastIndexedAt": "2025-06-01T12:05:23.000Z",
+    "indexStatus": "indexed",
+    "createdAt": "2025-06-01T12:00:00.000Z",
+    "updatedAt": "2025-06-01T12:05:23.000Z"
+  },
+  "error": null
+}
+```
+
+---
+
+## Delete a Repository
+
+Disconnect a repository from Orator. This removes all indexed data, patterns, context rules, and the knowledge graph for this repository.
+
+```
+DELETE /v1/repos/:repoId
+```
+
+### Path Parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `repoId` | string | The repository ID |
+
+### Example Request
+
+```bash
+curl -X DELETE https://api.orator.dev/v1/repos/01JQKX8F7Y2M3N4P5R6S7T8V9W \
+  -H "Authorization: Bearer orator_abc123def456"
+```
+
+### Example Response
+
+```json
+{
+  "data": {
+    "deleted": true
+  },
+  "error": null
+}
+```
+
+### Notes
+
+- This action is irreversible. All indexed data for the repository will be permanently deleted.
+- You will need to run `orator init` and `orator index` again to re-register and re-index the repository.

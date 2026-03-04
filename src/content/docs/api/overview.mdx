@@ -1,0 +1,124 @@
+---
+title: API Overview
+description: Overview of the Orator REST API — authentication, base URL, response format, and error handling.
+---
+
+The Orator API is a REST API that provides programmatic access to all of Orator's functionality. It powers the CLI, MCP server, and all integrations.
+
+## Base URL
+
+| Environment | URL |
+|---|---|
+| Production | `https://api.orator.dev` |
+| Local development | `http://localhost:8787` |
+
+All endpoints are prefixed with `/v1/`.
+
+## Authentication
+
+All API requests require authentication via a Bearer token in the `Authorization` header:
+
+```
+Authorization: Bearer orator_your_api_key_here
+```
+
+API keys are prefixed with `orator_` and can be created at [orator.dev](https://orator.dev) or via `orator login`.
+
+### Example
+
+```bash
+curl https://api.orator.dev/v1/repos \
+  -H "Authorization: Bearer orator_abc123def456"
+```
+
+## Response Format
+
+All successful responses follow this structure:
+
+```json
+{
+  "data": { ... },
+  "meta": null,
+  "error": null
+}
+```
+
+For list endpoints, `data` is an array and `meta` contains pagination info:
+
+```json
+{
+  "data": [ ... ],
+  "meta": {
+    "total": 100,
+    "page": 1,
+    "perPage": 20
+  },
+  "error": null
+}
+```
+
+## Error Format
+
+Error responses have `data` set to `null` and include an `error` object:
+
+```json
+{
+  "data": null,
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Repository not found"
+  }
+}
+```
+
+## Error Codes
+
+| HTTP Status | Error Code | Description |
+|---|---|---|
+| 400 | `VALIDATION_ERROR` | Invalid request body or parameters |
+| 401 | `UNAUTHORIZED` | Missing or invalid API key |
+| 404 | `NOT_FOUND` | Resource does not exist |
+| 429 | `RATE_LIMITED` | Too many requests — free tier is limited to 1,000 queries/month |
+| 500 | `INTERNAL_ERROR` | Unexpected server error |
+
+## Rate Limits
+
+| Plan | Query Limit |
+|---|---|
+| Free | 1,000 queries/month |
+| Pro | 50,000 queries/month |
+| Enterprise | Unlimited |
+
+When rate limited, the API returns a `429` status with the `RATE_LIMITED` error code.
+
+## Pagination
+
+List endpoints support pagination via query parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `page` | integer | `1` | Page number |
+| `perPage` | integer | `20` | Items per page (max 100) |
+
+Example:
+
+```bash
+curl "https://api.orator.dev/v1/repos?page=2&perPage=10" \
+  -H "Authorization: Bearer orator_abc123def456"
+```
+
+## TypeScript Types
+
+If you're building an integration in TypeScript, the shared types are available from the `@orator-dev/shared` package:
+
+```typescript
+import type {
+  ApiResponse,
+  ApiError,
+  ContextQuery,
+  ContextResult,
+  ContextItem,
+} from "@orator-dev/shared";
+```
+
+See the individual endpoint pages for complete request and response schemas.

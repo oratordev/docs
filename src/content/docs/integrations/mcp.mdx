@@ -1,0 +1,142 @@
+---
+title: MCP Server
+description: Set up the Orator MCP server for Claude Code and Claude Desktop.
+---
+
+The Orator MCP (Model Context Protocol) server allows AI tools like Claude to query your codebase context directly. Instead of manually copying context, Claude can call Orator tools to understand your code as part of the conversation.
+
+## Installation
+
+```bash
+npm install -g @orator-dev/mcp
+```
+
+## Configuration for Claude Code
+
+Add Orator to your Claude Code MCP settings. Create or edit `~/.claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "orator": {
+      "command": "orator-mcp",
+      "env": {
+        "ORATOR_API_KEY": "orator_your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+Then restart Claude Code for the changes to take effect.
+
+## Configuration for Claude Desktop
+
+Add Orator to your Claude Desktop MCP settings. The config file is located at:
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "orator": {
+      "command": "orator-mcp",
+      "env": {
+        "ORATOR_API_KEY": "orator_your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop after editing the configuration.
+
+## Available Tools
+
+Once configured, the following tools become available to Claude:
+
+### query_context
+
+Query codebase context with a natural language question. This is the primary tool Claude uses to understand your code.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `repoId` | string | Yes | The repository ID to query |
+| `query` | string | Yes | Natural language question about the codebase |
+| `maxTokens` | number | No | Maximum tokens to return (default: 4000) |
+| `intent` | string | No | Query intent: `understand`, `debug`, `implement`, `review` |
+
+**Example usage by Claude**: "Let me check how authentication works in this codebase" triggers `query_context` with `query: "how does authentication work?"`.
+
+### get_patterns
+
+Retrieve detected patterns for a repository — error handling, naming conventions, testing strategies, and more.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `repoId` | string | Yes | The repository ID |
+| `patternType` | string | No | Filter by type: `error_handling`, `naming`, `testing`, `logging`, `api`, `state_management` |
+
+**Example usage by Claude**: Before writing new code, Claude calls `get_patterns` to ensure it follows your established coding practices.
+
+### get_architecture
+
+Retrieve the high-level architecture and knowledge graph summary for a repository.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `repoId` | string | Yes | The repository ID |
+
+**Example usage by Claude**: "What's the architecture of this project?" triggers `get_architecture` to get an overview of modules, dependencies, and structure.
+
+### search_code
+
+Search for specific code entities (functions, classes, types) in the knowledge graph.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `repoId` | string | Yes | The repository ID |
+| `query` | string | Yes | Search query for code entities |
+| `nodeType` | string | No | Filter by type: `function`, `class`, `module`, `type`, `interface`, `variable`, `export` |
+
+**Example usage by Claude**: "Find all functions related to payment processing" triggers `search_code` with `query: "payment"` and `nodeType: "function"`.
+
+### get_conventions
+
+Retrieve the detected conventions for a repository — file structure, naming, import ordering, and more.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `repoId` | string | Yes | The repository ID |
+
+**Example usage by Claude**: Before generating code, Claude calls `get_conventions` to match your project's style and structure.
+
+## How It Works
+
+When you ask Claude a question about your code:
+
+1. Claude identifies that it needs codebase context
+2. It calls the appropriate Orator MCP tool (usually `query_context`)
+3. The MCP server sends the request to the Orator API
+4. Orator returns structured, relevant context from your knowledge graph
+5. Claude uses that context to give you an accurate, project-aware answer
+
+This means Claude understands your specific codebase — not just generic programming knowledge. It knows your patterns, conventions, file structure, and how different parts of your code relate to each other.
+
+## Environment Variables
+
+The MCP server supports these environment variables:
+
+| Variable | Description | Default |
+|---|---|---|
+| `ORATOR_API_KEY` | API key for authentication | Required |
+| `ORATOR_API_URL` | Override the API base URL | `https://api.orator.dev` |
+
+## Troubleshooting
+
+**MCP server not appearing in Claude**: Make sure you restarted Claude after editing the config file. Check that the `orator-mcp` command is available in your PATH by running `which orator-mcp`.
+
+**Authentication errors**: Verify your API key is correct and not expired. You can test it with `curl -H "Authorization: Bearer orator_your_key" https://api.orator.dev/v1/repos`.
+
+**No context returned**: Make sure the repository has been indexed. Run `orator status` in your project directory to check.

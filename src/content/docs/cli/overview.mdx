@@ -1,0 +1,58 @@
+---
+title: CLI Overview
+description: Overview of the Orator command-line interface.
+---
+
+The Orator CLI (`@orator-dev/cli`) is the primary tool for interacting with Orator from your terminal. It handles authentication, repository management, indexing, and context queries.
+
+## Installation
+
+```bash
+npm install -g @orator-dev/cli
+```
+
+## Global Flags
+
+These flags are available on all commands:
+
+| Flag | Description |
+|---|---|
+| `--help`, `-h` | Show help for a command |
+| `--version`, `-v` | Show the CLI version |
+| `--api-url <url>` | Override the API base URL (default: `https://api.orator.dev`) |
+| `--api-key <key>` | Override the API key (instead of stored config) |
+| `--json` | Output results as JSON instead of formatted text |
+| `--verbose` | Enable verbose logging |
+
+## Environment Variables
+
+The CLI respects these environment variables:
+
+| Variable | Description | Default |
+|---|---|---|
+| `ORATOR_API_KEY` | API key for authentication | Read from `~/.config/orator/config.json` |
+| `ORATOR_API_URL` | Base URL for the Orator API | `https://api.orator.dev` |
+
+Environment variables take precedence over stored configuration but are overridden by command-line flags.
+
+## Configuration File
+
+After running `orator login`, the CLI stores configuration at:
+
+```
+~/.config/orator/config.json
+```
+
+This file contains your API key and default settings. Do not commit this file to version control.
+
+## Commands
+
+| Command | Description |
+|---|---|
+| [`orator login`](/cli/commands/#login) | Authenticate with your Orator account |
+| [`orator init`](/cli/commands/#init) | Initialize Orator in the current repository |
+| [`orator index`](/cli/commands/#index) | Trigger indexing for the current repository |
+| [`orator query`](/cli/commands/#query) | Query context for the current repository |
+| [`orator status`](/cli/commands/#status) | Show the indexing status of the current repository |
+
+See the [Commands reference](/cli/commands/) for full details on each command.

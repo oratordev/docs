@@ -1,0 +1,114 @@
+---
+title: Context Query
+description: API endpoint for querying codebase context — the core Orator endpoint.
+---
+
+The Context Query endpoint is Orator's primary interface. It accepts a natural language query and returns structured, ranked context from your indexed codebase.
+
+## Query Context
+
+```
+POST /v1/context/query
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `repoId` | string | Yes | The repository ID to query |
+| `query` | string | Yes | Natural language query describing what context you need |
+| `maxTokens` | integer | No | Maximum tokens to include in the response (default: 4000) |
+| `intent` | string | No | Hint about the purpose of the query — helps Orator tailor results |
+
+#### Intent Values
+
+| Intent | Description |
+|---|---|
+| `understand` | Learning about how code works (default) |
+| `debug` | Troubleshooting an issue — prioritizes error handling and control flow |
+| `implement` | Writing new code — prioritizes patterns, conventions, and similar implementations |
+| `review` | Reviewing code — prioritizes conventions, patterns, and related test files |
+
+### Example Request
+
+```bash
+curl -X POST https://api.orator.dev/v1/context/query \
+  -H "Authorization: Bearer orator_abc123def456" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "repoId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+    "query": "how does the payment processing flow work?",
+    "maxTokens": 4000,
+    "intent": "understand"
+  }'
+```
+
+### Example Response
+
+```json
+{
+  "data": {
+    "context": [
+      {
+        "type": "code",
+        "content": "export class PaymentService {\n  constructor(\n    private readonly stripeClient: Stripe,\n    private readonly orderRepo: OrderRepository\n  ) {}\n\n  async processPayment(orderId: string, paymentMethodId: string): Promise<PaymentResult> {\n    const order = await this.orderRepo.findById(orderId);\n    if (!order) throw new AppError('ORDER_NOT_FOUND');\n\n    const intent = await this.stripeClient.paymentIntents.create({\n      amount: order.totalCents,\n      currency: 'usd',\n      payment_method: paymentMethodId,\n      confirm: true,\n    });\n\n    await this.orderRepo.updatePaymentStatus(orderId, intent.status);\n    return { orderId, status: intent.status, intentId: intent.id };\n  }\n}",
+        "source": "src/services/payment-service.ts",
+        "relevance": 0.96
+      },
+      {
+        "type": "code",
+        "content": "router.post('/checkout', authMiddleware, async (req, res) => {\n  const { orderId, paymentMethodId } = req.body;\n  const result = await paymentService.processPayment(orderId, paymentMethodId);\n  res.json({ data: result, error: null });\n});",
+        "source": "src/routes/checkout.ts",
+        "relevance": 0.89
+      },
+      {
+        "type": "pattern",
+        "content": "Payment errors use the AppError class with specific codes: PAYMENT_FAILED, INVALID_AMOUNT, ORDER_NOT_FOUND. All payment operations are wrapped in try/catch blocks that log the error and return a structured error response.",
+        "source": "detected_pattern:error_handling",
+        "relevance": 0.81
+      },
+      {
+        "type": "convention",
+        "content": "Service classes follow constructor injection pattern. Dependencies are declared as private readonly constructor parameters. All async service methods return typed Promise results.",
+        "source": "detected_convention:naming",
+        "relevance": 0.73
+      }
+    ],
+    "relevance": [0.96, 0.89, 0.81, 0.73],
+    "tokenCount": 2847
+  },
+  "error": null
+}
+```
+
+### Response Schema
+
+| Field | Type | Description |
+|---|---|---|
+| `context` | ContextItem[] | Array of context items, sorted by relevance (highest first) |
+| `relevance` | number[] | Relevance scores corresponding to each context item (0.0 to 1.0) |
+| `tokenCount` | integer | Total token count of all returned context items |
+
+#### ContextItem
+
+| Field | Type | Description |
+|---|---|---|
+| `type` | string | One of: `code`, `pattern`, `convention`, `rule` |
+| `content` | string | The context content — code snippet, pattern description, etc. |
+| `source` | string | Where this context came from — file path for code, identifier for patterns |
+| `relevance` | number | Relevance score from 0.0 (not relevant) to 1.0 (highly relevant) |
+
+### Error Responses
+
+| Status | Code | When |
+|---|---|---|
+| 400 | `VALIDATION_ERROR` | Missing `repoId` or `query`, or `maxTokens` is invalid |
+| 401 | `UNAUTHORIZED` | Missing or invalid API key |
+| 404 | `NOT_FOUND` | Repository not found or not indexed |
+| 429 | `RATE_LIMITED` | Monthly query limit exceeded |
+
+### Tips
+
+- Start with `maxTokens: 4000` and adjust based on your needs. Lower values return only the highest-relevance items, which is often sufficient.
+- Use the `intent` field to get better results. For example, when debugging, `intent: "debug"` will prioritize error handling code and control flow over general architecture.
+- The `tokenCount` in the response tells you exactly how many tokens the context uses, so you can budget your AI tool's context window accordingly.

@@ -1,0 +1,64 @@
+---
+title: Installation
+description: Install the Orator CLI and MCP server.
+---
+
+## System Requirements
+
+- **Node.js** 20 or later
+- **npm**, **pnpm**, or **yarn**
+- A terminal with shell access
+
+## Install the CLI
+
+The Orator CLI is the primary way to interact with Orator from your terminal. Install it globally:
+
+```bash
+npm install -g @orator-dev/cli
+```
+
+Or with pnpm:
+
+```bash
+pnpm add -g @orator-dev/cli
+```
+
+Verify the installation:
+
+```bash
+orator --version
+```
+
+## Install the MCP Server
+
+The MCP server allows AI tools like Claude to query your codebase context directly. Install it globally:
+
+```bash
+npm install -g @orator-dev/mcp
+```
+
+Or with pnpm:
+
+```bash
+pnpm add -g @orator-dev/mcp
+```
+
+After installation, see the [MCP Server integration guide](/integrations/mcp/) for configuration instructions.
+
+## Authentication
+
+Orator requires an API key for authentication. Sign up at [orator.dev](https://orator.dev) and then authenticate via the CLI:
+
+```bash
+orator login
+```
+
+This opens your browser, authenticates your account, and stores the API key locally. You can also set the key manually via environment variable:
+
+```bash
+export ORATOR_API_KEY=orator_your_api_key_here
+```
+
+## Next Steps
+
+Once installed, follow the [Quickstart guide](/getting-started/quickstart/) to index your first repository.

@@ -1,0 +1,251 @@
+---
+title: CLI Commands
+description: Complete reference for all Orator CLI commands.
+---
+
+## login
+
+Authenticate with your Orator account. Opens your browser to complete the OAuth flow and stores the API key locally.
+
+### Usage
+
+```bash
+orator login
+```
+
+### Example
+
+```bash
+$ orator login
+Opening browser for authentication...
+✓ Logged in as you@example.com
+  API key stored in ~/.config/orator/config.json
+```
+
+### Notes
+
+- The API key is stored at `~/.config/orator/config.json`
+- You can also set `ORATOR_API_KEY` environment variable directly if you prefer not to use the browser flow
+- Running `login` again will overwrite the existing stored key
+
+---
+
+## init
+
+Initialize Orator in the current repository. Detects the git remote and registers the repository with the Orator API.
+
+### Usage
+
+```bash
+orator init [options]
+```
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--name <name>` | Override the repository name (default: detected from git) |
+| `--branch <branch>` | Set the default branch (default: detected from git, usually `main`) |
+| `--url <url>` | Override the repository URL (default: detected from git remote) |
+
+### Example
+
+```bash
+$ cd /path/to/my-project
+$ orator init
+✓ Detected git repository: my-project
+  Remote: https://github.com/you/my-project.git
+  Branch: main
+
+✓ Repository registered
+  Repo ID: 01JQKX8F7Y2M3N4P5R6S7T8V9W
+```
+
+With custom options:
+
+```bash
+$ orator init --name "My App" --branch develop
+✓ Repository registered as "My App"
+  Repo ID: 01JQKX8F7Y2M3N4P5R6S7T8V9W
+  Branch: develop
+```
+
+### Notes
+
+- Must be run from within a git repository
+- If the repository is already registered, the command will show the existing repo ID
+- The repo ID is stored in `.orator` in your project root (add this to `.gitignore` if desired)
+
+---
+
+## index
+
+Trigger indexing for the current repository. Analyzes all files, builds the knowledge graph, and detects patterns.
+
+### Usage
+
+```bash
+orator index [options]
+```
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--watch` | Watch for file changes and re-index automatically |
+| `--no-wait` | Start indexing and return immediately without waiting for completion |
+
+### Example
+
+```bash
+$ orator index
+✓ Indexing started
+  Job ID: 01JQKX9A1B2C3D4E5F6G7H8J9K
+  Files detected: 247
+
+  ◐ Processing... 247/247 files
+  ◐ Building knowledge graph...
+  ◐ Detecting patterns...
+
+✓ Indexing complete
+  Nodes: 1,842 (functions, classes, modules, types)
+  Edges: 3,267 (imports, calls, extends, implements)
+  Patterns: 14 detected
+  Duration: 23s
+```
+
+Non-blocking mode:
+
+```bash
+$ orator index --no-wait
+✓ Indexing started
+  Job ID: 01JQKX9A1B2C3D4E5F6G7H8J9K
+  Run 'orator status' to check progress.
+```
+
+### Notes
+
+- Requires `orator init` to have been run first
+- Subsequent runs are incremental — only changed files are re-processed
+- Large repositories may take several minutes on the first index
+- The `--watch` flag is useful during active development
+
+---
+
+## query
+
+Query context for the current repository. Sends a natural language query to the Orator Context API and displays structured results.
+
+### Usage
+
+```bash
+orator query <question> [options]
+```
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--max-tokens <n>` | Maximum tokens to return (default: 4000) |
+| `--intent <intent>` | Query intent hint (e.g., `understand`, `debug`, `implement`, `review`) |
+| `--repo <repoId>` | Query a specific repository by ID (default: current directory's repo) |
+
+### Example
+
+```bash
+$ orator query "how does authentication work?"
+Query: "how does authentication work?"
+Tokens: 2,847
+
+─── Context ────────────────────────────────────────
+
+[code] src/middleware/auth.ts (relevance: 0.95)
+  Authentication middleware — validates JWT tokens,
+  extracts user from session, attaches to request context.
+
+[code] src/services/auth-service.ts (relevance: 0.91)
+  AuthService class — handles login, signup, token
+  refresh, password reset flows.
+
+[pattern] error_handling (relevance: 0.82)
+  Auth errors use AppError class with specific codes:
+  UNAUTHORIZED, TOKEN_EXPIRED, INVALID_CREDENTIALS.
+
+[convention] naming (relevance: 0.78)
+  Auth-related files prefixed with "auth-" in services/
+  and middleware/ directories.
+```
+
+JSON output:
+
+```bash
+$ orator query "what patterns are used for error handling?" --json
+{
+  "data": {
+    "context": [
+      {
+        "type": "pattern",
+        "content": "All errors extend AppError base class...",
+        "source": "src/errors/app-error.ts",
+        "relevance": 0.97
+      }
+    ],
+    "relevance": [0.97],
+    "tokenCount": 1203
+  },
+  "error": null
+}
+```
+
+### Notes
+
+- The query should be a natural language question or description
+- Results are sorted by relevance (highest first)
+- Use `--max-tokens` to control how much context is returned — lower values return only the most relevant items
+- The `--intent` flag helps Orator tailor results: `understand` for learning about code, `debug` for troubleshooting, `implement` for writing new code, `review` for code review context
+
+---
+
+## status
+
+Show the indexing status and summary for the current repository.
+
+### Usage
+
+```bash
+orator status [options]
+```
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--repo <repoId>` | Check status for a specific repository by ID |
+
+### Example
+
+```bash
+$ orator status
+Repository: my-project
+Status: indexed
+Last indexed: 2 minutes ago
+Nodes: 1,842
+Patterns: 14
+Context rules: 3
+```
+
+When indexing is in progress:
+
+```bash
+$ orator status
+Repository: my-project
+Status: indexing
+Progress: 142/247 files (57%)
+Job ID: 01JQKX9A1B2C3D4E5F6G7H8J9K
+```
+
+### Notes
+
+- Requires `orator init` to have been run first
+- Status values: `pending`, `indexing`, `indexed`, `failed`
+- If status is `failed`, the error message from the last index job will be displayed

@@ -1,0 +1,53 @@
+---
+title: Orator Documentation
+description: The orator for your codebase — a universal context engine for AI coding tools.
+template: splash
+hero:
+  tagline: A universal codebase context engine that indexes your code and serves structured context to any AI coding tool.
+  actions:
+    - text: Get Started
+      link: /getting-started/installation/
+      icon: right-arrow
+      variant: primary
+    - text: API Reference
+      link: /api/overview/
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## What is Orator?
+
+Orator indexes your codebase and builds a knowledge graph of your code's structure, patterns, and conventions. It then serves that context to AI coding tools — so they understand your codebase the way your best engineer does.
+
+Instead of every AI tool re-reading and re-analyzing your files from scratch, Orator provides a single source of truth for codebase context via a clean API and native integrations.
+
+<CardGrid stagger>
+  <Card title="Index Once, Use Everywhere" icon="rocket">
+    Index your codebase once with Orator. Every AI tool you use — Claude, Cursor, Copilot — gets the same deep understanding of your code.
+  </Card>
+  <Card title="Knowledge Graph" icon="puzzle">
+    Orator builds a graph of functions, classes, modules, and their relationships. It understands imports, call chains, inheritance, and more.
+  </Card>
+  <Card title="Pattern Detection" icon="magnifier">
+    Automatically detects your codebase's patterns — error handling, naming conventions, testing strategies, API design — and serves them as context.
+  </Card>
+  <Card title="Context Rules" icon="setting">
+    Define custom rules that control what context gets served for different queries. Path-based, file-type, query-type, or exclusion rules.
+  </Card>
+</CardGrid>
+
+## How It Works
+
+1. **Connect** your repository via the CLI or API
+2. **Index** your codebase — Orator analyzes every file, builds a knowledge graph, and detects patterns
+3. **Query** context through the API, CLI, or native integrations like MCP
+4. **AI tools** receive structured, relevant context for every interaction
+
+## Quick Links
+
+- [Installation](/getting-started/installation/) — Install the CLI and MCP server
+- [Quickstart](/getting-started/quickstart/) — Get up and running in 5 minutes
+- [CLI Commands](/cli/commands/) — Full CLI reference
+- [API Reference](/api/overview/) — REST API documentation
+- [MCP Server](/integrations/mcp/) — Set up the MCP integration for Claude

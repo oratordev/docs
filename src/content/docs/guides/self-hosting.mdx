@@ -1,0 +1,33 @@
+---
+title: Self-Hosting
+description: Deploy Orator in your own infrastructure.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Coming Soon">
+  Self-hosting documentation is currently in development. Orator is built on Cloudflare Workers and D1, and self-hosting options are being evaluated.
+</Aside>
+
+## What to Expect
+
+The self-hosted version of Orator will allow you to run the entire context engine within your own infrastructure:
+
+- **Docker deployment** — Single Docker image with all dependencies included, suitable for any container orchestration platform
+- **Kubernetes support** — Helm charts for deploying Orator to Kubernetes clusters with autoscaling and high availability
+- **Data sovereignty** — All indexed code, knowledge graphs, and context data stay within your network
+- **Air-gapped environments** — Support for environments with no external internet access
+- **Custom storage backends** — Use your own PostgreSQL or SQLite database instead of Cloudflare D1
+
+## Planned Architecture
+
+The self-hosted deployment will include:
+
+- **API server** — Core REST API (Node.js)
+- **Index worker** — Background job processor for codebase indexing
+- **Database** — PostgreSQL or SQLite for storing knowledge graphs and metadata
+- **File storage** — Local filesystem or S3-compatible object storage for code analysis cache
+
+## Stay Updated
+
+Follow the [Orator GitHub](https://github.com/oratordev) for self-hosting announcements, or check back here for updates.

@@ -1,0 +1,124 @@
+---
+title: Quickstart
+description: Get up and running with Orator in 5 minutes.
+---
+
+This guide walks you through indexing your first repository and querying context in under 5 minutes.
+
+## 1. Log in
+
+Authenticate with your Orator account:
+
+```bash
+orator login
+```
+
+This opens your browser to complete authentication. On success, you'll see:
+
+```
+✓ Logged in as you@example.com
+  API key stored in ~/.config/orator/config.json
+```
+
+## 2. Initialize your repository
+
+Navigate to your project directory and initialize Orator:
+
+```bash
+cd /path/to/your/project
+orator init
+```
+
+Orator detects your repository and registers it:
+
+```
+✓ Detected git repository: my-project
+  Remote: https://github.com/you/my-project.git
+  Branch: main
+
+✓ Repository registered
+  Repo ID: 01JQKX8F7Y2M3N4P5R6S7T8V9W
+```
+
+## 3. Index your codebase
+
+Trigger the indexing process:
+
+```bash
+orator index
+```
+
+Orator uploads your code metadata and starts building the knowledge graph:
+
+```
+✓ Indexing started
+  Job ID: 01JQKX9A1B2C3D4E5F6G7H8J9K
+  Files detected: 247
+
+  ◐ Processing... 247/247 files
+  ◐ Building knowledge graph...
+  ◐ Detecting patterns...
+
+✓ Indexing complete
+  Nodes: 1,842 (functions, classes, modules, types)
+  Edges: 3,267 (imports, calls, extends, implements)
+  Patterns: 14 detected
+  Duration: 23s
+```
+
+## 4. Query your codebase
+
+Now you can ask questions about your code:
+
+```bash
+orator query "how does authentication work?"
+```
+
+Orator returns structured context:
+
+```
+Query: "how does authentication work?"
+Tokens: 2,847
+
+─── Context ────────────────────────────────────────
+
+[code] src/middleware/auth.ts (relevance: 0.95)
+  Authentication middleware — validates JWT tokens,
+  extracts user from session, attaches to request context.
+
+[code] src/services/auth-service.ts (relevance: 0.91)
+  AuthService class — handles login, signup, token
+  refresh, password reset flows.
+
+[pattern] error_handling (relevance: 0.82)
+  Auth errors use AppError class with specific codes:
+  UNAUTHORIZED, TOKEN_EXPIRED, INVALID_CREDENTIALS.
+
+[convention] naming (relevance: 0.78)
+  Auth-related files prefixed with "auth-" in services/
+  and middleware/ directories.
+```
+
+## 5. Check status
+
+View the current state of your indexed repository:
+
+```bash
+orator status
+```
+
+```
+Repository: my-project
+Status: indexed
+Last indexed: 2 minutes ago
+Nodes: 1,842
+Patterns: 14
+Context rules: 0
+```
+
+## Next Steps
+
+- Learn about [Core Concepts](/getting-started/concepts/) to understand how Orator works under the hood
+- Set up the [MCP Server](/integrations/mcp/) so Claude can query your codebase directly
+- Define [Context Rules](/guides/team-context/) to customize what context gets served
+- Explore the full [CLI reference](/cli/commands/) for all available commands

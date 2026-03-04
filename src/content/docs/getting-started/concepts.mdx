@@ -1,0 +1,80 @@
+---
+title: Core Concepts
+description: Understand the key concepts behind Orator's codebase context engine.
+---
+
+## Knowledge Graph
+
+At the heart of Orator is a **knowledge graph** — a structured representation of your codebase. When you index a repository, Orator analyzes every file and builds a graph of:
+
+- **Nodes** — Individual code entities: functions, classes, modules, types, interfaces, variables, and exports. Each node stores its file path, signature, line range, and a content hash for change detection.
+- **Edges** — Relationships between nodes: imports, function calls, class inheritance (`extends`), interface implementations (`implements`), usage references, and re-exports.
+
+This graph allows Orator to traverse your codebase structurally. When you ask "how does auth work?", Orator doesn't just search for the word "auth" — it finds auth-related nodes and follows their edges to surface the full picture: middleware, services, error types, and configuration.
+
+## Context API
+
+The **Context API** is Orator's primary interface. When an AI tool needs to understand your code, it sends a natural language query to the Context API:
+
+```json
+{
+  "repoId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+  "query": "how does the payment flow work?",
+  "maxTokens": 4000,
+  "intent": "understand"
+}
+```
+
+The API returns structured context items — code snippets, patterns, conventions, and rules — ranked by relevance. Each item includes a relevance score and token count, so consuming tools can stay within context window limits.
+
+## Indexing
+
+**Indexing** is the process of analyzing your codebase and building the knowledge graph. When you run `orator index`:
+
+1. Orator scans all files in your repository
+2. Parses source files to extract code entities (nodes)
+3. Resolves references and builds relationships (edges)
+4. Runs pattern detection across the codebase
+5. Stores everything in Orator's database
+
+Indexing is incremental — on subsequent runs, Orator uses content hashes to detect which files changed and only re-processes those. Index jobs are tracked with statuses: `queued`, `processing`, `completed`, or `failed`.
+
+## Patterns
+
+**Patterns** are recurring code practices that Orator detects automatically in your codebase. Pattern types include:
+
+| Pattern Type | Description |
+|---|---|
+| `error_handling` | How errors are created, thrown, caught, and propagated |
+| `naming` | Naming conventions for files, functions, classes, variables |
+| `testing` | Testing patterns, assertion styles, mock strategies |
+| `logging` | Logging approaches, levels, structured vs. unstructured |
+| `api` | API design patterns, route structures, middleware usage |
+| `state_management` | State handling approaches, stores, reactivity patterns |
+
+Each detected pattern includes a description, code examples, and a confidence score. When a developer asks an AI tool to write code in your project, Orator serves these patterns as context so the AI follows your established practices.
+
+## Conventions
+
+**Conventions** are the implicit rules and standards your team follows. While patterns are detected from code analysis, conventions capture the broader practices:
+
+- File and directory structure
+- Module organization
+- Import ordering
+- Comment and documentation styles
+- Commit message formats
+
+Orator detects conventions during indexing and makes them available via the API, so AI tools generate code that feels native to your project.
+
+## Context Rules
+
+**Context Rules** are user-defined rules that control what context Orator serves for different queries. They give you fine-grained control over the context engine. There are four rule types:
+
+| Rule Type | Description | Example |
+|---|---|---|
+| `path` | Match queries to specific file paths | When asking about "auth", always include `src/middleware/auth.ts` |
+| `file_type` | Match queries to file types | For "styling" queries, prioritize `.css` and `.scss` files |
+| `query_type` | Match specific query patterns | For "how to test" queries, include testing utilities and examples |
+| `exclusion` | Exclude paths or patterns from results | Never include `node_modules/` or `dist/` in context |
+
+Rules have a `priority` field (higher = more important) and can be managed via the API or CLI. See the [Team Context guide](/guides/team-context/) for examples.
