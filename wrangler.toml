@@ -1,2 +1,6 @@
 name = "orator-docs"
-pages_build_output_dir = "dist/"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-01-01"
+
+[build]
+command = "pnpm install && pnpm build"
