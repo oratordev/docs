@@ -39,10 +39,15 @@ export default defineConfig({
         },
       ],
       customCss: ["./src/styles/custom.css"],
+      favicon: "/favicon.ico",
       head: [
         {
           tag: "script",
           content: `document.documentElement.dataset.theme = "dark"; localStorage.setItem("starlight-theme", "dark");`,
+        },
+        {
+          tag: "link",
+          attrs: { rel: "icon", href: "/favicon.ico", sizes: "any" },
         },
       ],
     }),
