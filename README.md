@@ -19,4 +19,4 @@ pnpm build
 
 ## Deploy
 
-Deployed automatically to [documentation.orator.dev](https://documentation.orator.dev) via Cloudflare Pages on push to `main`.
+Deployed automatically to [docs.orator.dev](https://docs.orator.dev) via Cloudflare Pages on push to `main`.

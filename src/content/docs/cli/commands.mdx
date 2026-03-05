@@ -5,7 +5,7 @@ description: Complete reference for all Orator CLI commands.
 
 ## login
 
-Authenticate with your Orator account. Opens your browser to complete the OAuth flow and stores the API key locally.
+Authenticate with your Orator account. Prompts for your API key and stores it locally.
 
 ### Usage
 
@@ -17,15 +17,20 @@ orator login
 
 ```bash
 $ orator login
-Opening browser for authentication...
-✓ Logged in as you@example.com
-  API key stored in ~/.config/orator/config.json
+Orator Login
+
+  Enter your API key (starts with orator_).
+  Get one at https://orator.dev/dashboard/api-keys
+
+  API key: orator_abc123def456
+✓ Logged in successfully!
+  Credentials saved to: ~/.config/orator/credentials.json
 ```
 
 ### Notes
 
-- The API key is stored at `~/.config/orator/config.json`
-- You can also set `ORATOR_API_KEY` environment variable directly if you prefer not to use the browser flow
+- The API key is stored at `~/.config/orator/credentials.json`
+- You can also set `ORATOR_API_KEY` environment variable directly
 - Running `login` again will overwrite the existing stored key
 
 ---
@@ -40,14 +45,6 @@ Initialize Orator in the current repository. Detects the git remote and register
 orator init [options]
 ```
 
-### Flags
-
-| Flag | Description |
-|---|---|
-| `--name <name>` | Override the repository name (default: detected from git) |
-| `--branch <branch>` | Set the default branch (default: detected from git, usually `main`) |
-| `--url <url>` | Override the repository URL (default: detected from git remote) |
-
 ### Example
 
 ```bash
@@ -59,15 +56,6 @@ $ orator init
 
 ✓ Repository registered
   Repo ID: 01JQKX8F7Y2M3N4P5R6S7T8V9W
-```
-
-With custom options:
-
-```bash
-$ orator init --name "My App" --branch develop
-✓ Repository registered as "My App"
-  Repo ID: 01JQKX8F7Y2M3N4P5R6S7T8V9W
-  Branch: develop
 ```
 
 ### Notes
@@ -88,13 +76,6 @@ Trigger indexing for the current repository. Analyzes all files, builds the know
 orator index [options]
 ```
 
-### Flags
-
-| Flag | Description |
-|---|---|
-| `--watch` | Watch for file changes and re-index automatically |
-| `--no-wait` | Start indexing and return immediately without waiting for completion |
-
 ### Example
 
 ```bash
@@ -114,21 +95,11 @@ $ orator index
   Duration: 23s
 ```
 
-Non-blocking mode:
-
-```bash
-$ orator index --no-wait
-✓ Indexing started
-  Job ID: 01JQKX9A1B2C3D4E5F6G7H8J9K
-  Run 'orator status' to check progress.
-```
-
 ### Notes
 
 - Requires `orator init` to have been run first
 - Subsequent runs are incremental — only changed files are re-processed
 - Large repositories may take several minutes on the first index
-- The `--watch` flag is useful during active development
 
 ---
 
@@ -148,7 +119,6 @@ orator query <question> [options]
 |---|---|
 | `--max-tokens <n>` | Maximum tokens to return (default: 4000) |
 | `--intent <intent>` | Query intent hint (e.g., `understand`, `debug`, `implement`, `review`) |
-| `--repo <repoId>` | Query a specific repository by ID (default: current directory's repo) |
 
 ### Example
 
@@ -216,32 +186,32 @@ Show the indexing status and summary for the current repository.
 orator status [options]
 ```
 
-### Flags
-
-| Flag | Description |
-|---|---|
-| `--repo <repoId>` | Check status for a specific repository by ID |
-
 ### Example
 
 ```bash
 $ orator status
-Repository: my-project
-Status: indexed
+Name:         my-project
+ID:           01JQKX8F7Y2M3N4P5R6S7T8V9W
+URL:          https://github.com/you/my-project.git
+Branch:       main
+Status:       indexed
 Last indexed: 2 minutes ago
-Nodes: 1,842
-Patterns: 14
-Context rules: 3
+Created:      2025-06-01T14:00:00.000Z
+Updated:      2025-06-01T14:02:30.000Z
 ```
 
 When indexing is in progress:
 
 ```bash
 $ orator status
-Repository: my-project
-Status: indexing
-Progress: 142/247 files (57%)
-Job ID: 01JQKX9A1B2C3D4E5F6G7H8J9K
+Name:         my-project
+ID:           01JQKX8F7Y2M3N4P5R6S7T8V9W
+URL:          https://github.com/you/my-project.git
+Branch:       main
+Status:       indexing
+Last indexed: never
+Created:      2025-06-01T14:00:00.000Z
+Updated:      2025-06-01T14:00:00.000Z
 ```
 
 ### Notes

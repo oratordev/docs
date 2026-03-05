@@ -3,138 +3,77 @@ title: Team Context
 description: How to set up team conventions, ADRs, and context rules for your organization.
 ---
 
-Orator's automatic pattern detection works well out of the box, but you can go further by defining **context rules** — custom rules that control exactly what context gets served for different types of queries. This is especially valuable for teams with established conventions, architectural decision records (ADRs), or specific context that AI tools should always know about.
+Orator's automatic pattern detection works well out of the box, but you can go further by defining **context rules** -- custom rules that control exactly what context gets served for different types of queries. This is especially valuable for teams with established conventions, architectural decision records (ADRs), or specific context that AI tools should always know about.
 
-## Context Rule Types
+> **Coming Soon:** The Context Rules API (`POST /v1/context-rules`, `GET /v1/repos/:repoId/context-rules`, `PUT /v1/context-rules/:id`, `DELETE /v1/context-rules/:id`) is a planned feature that is not yet available. The rule types and API examples below describe the intended design. This guide will be updated when the endpoints are live.
 
-There are four types of context rules:
+## Context Rule Types (Planned)
+
+There will be four types of context rules:
 
 ### Path Rules
 
-Path rules associate specific file paths with query topics. When a query matches the topic, the specified files are always included in the context.
-
-```bash
-curl -X POST https://api.orator.dev/v1/context-rules \
-  -H "Authorization: Bearer orator_abc123def456" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
-    "ruleType": "path",
-    "pattern": "auth",
-    "context": "src/middleware/auth.ts,src/services/auth-service.ts,src/types/auth.ts",
-    "priority": 10
-  }'
-```
-
-This rule ensures that any query mentioning "auth" always includes the core authentication files, even if the knowledge graph might otherwise prioritize other results.
-
-### File Type Rules
-
-File type rules prioritize certain file extensions for specific query topics.
-
-```bash
-curl -X POST https://api.orator.dev/v1/context-rules \
-  -H "Authorization: Bearer orator_abc123def456" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
-    "ruleType": "file_type",
-    "pattern": "styling|css|design",
-    "context": ".css,.scss,.module.css",
-    "priority": 5
-  }'
-```
-
-When someone asks about styling, CSS and SCSS files are prioritized in the results.
-
-### Query Type Rules
-
-Query type rules match specific query patterns and inject additional context. These are useful for embedding team knowledge and ADRs.
-
-```bash
-curl -X POST https://api.orator.dev/v1/context-rules \
-  -H "Authorization: Bearer orator_abc123def456" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
-    "ruleType": "query_type",
-    "pattern": "database|db|migration",
-    "context": "We use Drizzle ORM with PostgreSQL. Migrations are in db/migrations/ and must be created with drizzle-kit. Never write raw SQL for application queries. See ADR-003 for the decision to migrate from Prisma.",
-    "priority": 8
-  }'
-```
-
-This injects a team convention whenever someone asks about the database, ensuring AI tools follow your architectural decisions.
-
-### Exclusion Rules
-
-Exclusion rules prevent specific paths or patterns from appearing in context results.
-
-```bash
-curl -X POST https://api.orator.dev/v1/context-rules \
-  -H "Authorization: Bearer orator_abc123def456" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
-    "ruleType": "exclusion",
-    "pattern": "*.generated.ts,*.min.js,dist/**,coverage/**",
-    "context": "Generated and build output files excluded from context",
-    "priority": 100
-  }'
-```
-
-Exclusion rules should typically have high priority to ensure they override other rules.
-
-## Managing Rules via the API
-
-### List Rules
-
-```bash
-curl https://api.orator.dev/v1/repos/01JQKX8F7Y2M3N4P5R6S7T8V9W/context-rules \
-  -H "Authorization: Bearer orator_abc123def456"
-```
+Path rules will associate specific file paths with query topics. When a query matches the topic, the specified files will always be included in the context.
 
 ```json
 {
-  "data": [
-    {
-      "id": "01JQKY3H9J0K1L2M3N4P5Q6R7S",
-      "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
-      "ruleType": "path",
-      "pattern": "auth",
-      "context": "src/middleware/auth.ts,src/services/auth-service.ts",
-      "priority": 10,
-      "createdAt": "2025-06-01T14:00:00.000Z",
-      "updatedAt": "2025-06-01T14:00:00.000Z"
-    }
-  ],
-  "meta": {
-    "total": 1,
-    "page": 1,
-    "perPage": 20
-  },
-  "error": null
+  "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+  "ruleType": "path",
+  "pattern": "auth",
+  "context": "src/middleware/auth.ts,src/services/auth-service.ts,src/types/auth.ts",
+  "priority": 10
 }
 ```
 
-### Update a Rule
+This rule will ensure that any query mentioning "auth" always includes the core authentication files, even if the knowledge graph might otherwise prioritize other results.
 
-```bash
-curl -X PUT https://api.orator.dev/v1/context-rules/01JQKY3H9J0K1L2M3N4P5Q6R7S \
-  -H "Authorization: Bearer orator_abc123def456" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "pattern": "auth|authentication|login",
-    "priority": 15
-  }'
+### File Type Rules
+
+File type rules will prioritize certain file extensions for specific query topics.
+
+```json
+{
+  "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+  "ruleType": "file_type",
+  "pattern": "styling|css|design",
+  "context": ".css,.scss,.module.css",
+  "priority": 5
+}
 ```
 
-### Delete a Rule
+When someone asks about styling, CSS and SCSS files will be prioritized in the results.
 
-```bash
-curl -X DELETE https://api.orator.dev/v1/context-rules/01JQKY3H9J0K1L2M3N4P5Q6R7S \
-  -H "Authorization: Bearer orator_abc123def456"
+### Query Type Rules
+
+Query type rules will match specific query patterns and inject additional context. These will be useful for embedding team knowledge and ADRs.
+
+```json
+{
+  "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+  "ruleType": "query_type",
+  "pattern": "database|db|migration",
+  "context": "We use Drizzle ORM with PostgreSQL. Migrations are in db/migrations/ and must be created with drizzle-kit. Never write raw SQL for application queries. See ADR-003 for the decision to migrate from Prisma.",
+  "priority": 8
+}
 ```
+
+This will inject a team convention whenever someone asks about the database, ensuring AI tools follow your architectural decisions.
+
+### Exclusion Rules
+
+Exclusion rules will prevent specific paths or patterns from appearing in context results.
+
+```json
+{
+  "repositoryId": "01JQKX8F7Y2M3N4P5R6S7T8V9W",
+  "ruleType": "exclusion",
+  "pattern": "*.generated.ts,*.min.js,dist/**,coverage/**",
+  "context": "Generated and build output files excluded from context",
+  "priority": 100
+}
+```
+
+Exclusion rules should typically have high priority to ensure they override other rules.
 
 ## Recommended Rules for Teams
 

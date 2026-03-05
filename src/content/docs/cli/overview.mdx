@@ -19,31 +19,28 @@ These flags are available on all commands:
 |---|---|
 | `--help`, `-h` | Show help for a command |
 | `--version`, `-v` | Show the CLI version |
-| `--api-url <url>` | Override the API base URL (default: `https://api.orator.dev`) |
-| `--api-key <key>` | Override the API key (instead of stored config) |
 | `--json` | Output results as JSON instead of formatted text |
-| `--verbose` | Enable verbose logging |
 
 ## Environment Variables
 
-The CLI respects these environment variables:
+The CLI respects these environment variables for configuration:
 
 | Variable | Description | Default |
 |---|---|---|
-| `ORATOR_API_KEY` | API key for authentication | Read from `~/.config/orator/config.json` |
+| `ORATOR_API_KEY` | API key for authentication | Read from `~/.config/orator/credentials.json` |
 | `ORATOR_API_URL` | Base URL for the Orator API | `https://api.orator.dev` |
 
-Environment variables take precedence over stored configuration but are overridden by command-line flags.
+Environment variables take precedence over stored configuration.
 
 ## Configuration File
 
-After running `orator login`, the CLI stores configuration at:
+After running `orator login`, the CLI stores credentials at:
 
 ```
-~/.config/orator/config.json
+~/.config/orator/credentials.json
 ```
 
-This file contains your API key and default settings. Do not commit this file to version control.
+This file contains your API key. Do not commit this file to version control.
 
 ## Commands
 

@@ -13,11 +13,11 @@ Authenticate with your Orator account:
 orator login
 ```
 
-This opens your browser to complete authentication. On success, you'll see:
+This prompts you to enter your API key. Get one at [orator.dev/dashboard/api-keys](https://orator.dev/dashboard/api-keys). On success, you'll see:
 
 ```
-✓ Logged in as you@example.com
-  API key stored in ~/.config/orator/config.json
+✓ Logged in successfully!
+  Credentials saved to: ~/.config/orator/credentials.json
 ```
 
 ## 2. Initialize your repository
@@ -108,12 +108,14 @@ orator status
 ```
 
 ```
-Repository: my-project
-Status: indexed
+Name:         my-project
+ID:           01JQKX8F7Y2M3N4P5R6S7T8V9W
+URL:          https://github.com/you/my-project.git
+Branch:       main
+Status:       indexed
 Last indexed: 2 minutes ago
-Nodes: 1,842
-Patterns: 14
-Context rules: 0
+Created:      2025-06-01T14:00:00.000Z
+Updated:      2025-06-01T14:02:30.000Z
 ```
 
 ## Next Steps
