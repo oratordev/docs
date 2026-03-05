@@ -5,6 +5,10 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Orator Docs",
+      disable404Route: false,
+      expressiveCode: {
+        themes: ["github-dark"],
+      },
       social: [
         {
           icon: "github",
@@ -35,6 +39,12 @@ export default defineConfig({
         },
       ],
       customCss: ["./src/styles/custom.css"],
+      head: [
+        {
+          tag: "script",
+          content: `document.documentElement.dataset.theme = "dark"; localStorage.setItem("starlight-theme", "dark");`,
+        },
+      ],
     }),
   ],
 });

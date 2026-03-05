@@ -266,6 +266,13 @@ dialog[aria-label="Search"] {
   border-color: var(--sl-color-hairline);
 }
 
+/* ── Hide theme toggle ───────────────────────────────────────────────── */
+
+starlight-theme-select,
+[data-theme-select] {
+  display: none !important;
+}
+
 /* ── Scrollbar ───────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar {
