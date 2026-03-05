@@ -60,13 +60,15 @@ starlight-menu-button + nav {
   font-size: var(--sl-text-sm);
 }
 
+[data-current="true"] > a,
+a[aria-current="page"],
 .sidebar-content a[aria-current="page"] {
-  font-weight: 600;
-  color: var(--sl-color-white);
-  border-left: 2px solid var(--sl-color-accent);
-  padding-left: calc(0.5rem - 2px);
-  background: rgba(139, 156, 247, 0.08);
-  border-radius: 0 4px 4px 0;
+  font-weight: 600 !important;
+  color: #ededef !important;
+  border-left: 2px solid var(--sl-color-accent) !important;
+  padding-left: calc(0.5rem - 2px) !important;
+  background: rgba(139, 156, 247, 0.08) !important;
+  border-radius: 0 4px 4px 0 !important;
 }
 
 /* Sidebar group labels */
