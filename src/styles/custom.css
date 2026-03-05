@@ -151,29 +151,50 @@ a[aria-current="page"],
 
 /* Tables */
 .sl-markdown-content table {
-  border: 1px solid var(--sl-color-hairline-light);
-  border-radius: 8px;
+  border: 1px solid var(--sl-color-hairline-light) !important;
+  border-radius: 8px !important;
   overflow: hidden;
   font-size: var(--sl-text-sm);
+  background: var(--sl-color-bg) !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+.sl-markdown-content thead,
+.sl-markdown-content thead tr {
+  background: #1a1a20 !important;
 }
 
 .sl-markdown-content th {
-  background: var(--sl-color-gray-6);
+  background: #1a1a20 !important;
   font-weight: 600;
   text-transform: uppercase;
   font-size: var(--sl-text-xs);
   letter-spacing: 0.05em;
-  color: var(--sl-color-gray-2);
+  color: var(--sl-color-gray-2) !important;
+  border-bottom: 1px solid var(--sl-color-hairline-light) !important;
+}
+
+.sl-markdown-content td {
+  background: var(--sl-color-bg) !important;
+  color: var(--sl-color-gray-1) !important;
 }
 
 .sl-markdown-content td,
 .sl-markdown-content th {
-  border-color: var(--sl-color-hairline-light);
+  border-color: var(--sl-color-hairline-light) !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
   padding: 0.625rem 0.875rem;
 }
 
-.sl-markdown-content tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.015);
+.sl-markdown-content tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+.sl-markdown-content tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02) !important;
 }
 
 /* Blockquotes / Asides */
