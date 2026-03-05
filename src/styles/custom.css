@@ -1,13 +1,287 @@
+/* ── Orator Docs — Dark theme inspired by MDN / Mozilla ──────────────── */
+
+/* Force dark mode only */
 :root {
-  --sl-color-accent-low: #1a2a4a;
-  --sl-color-accent: #4a6fa5;
-  --sl-color-accent-high: #1b2a4a;
-  --sl-color-text-accent: #4a6fa5;
+  color-scheme: dark;
 }
 
-:root[data-theme="light"] {
-  --sl-color-accent-low: #dce5f2;
-  --sl-color-accent: #4a6fa5;
-  --sl-color-accent-high: #1b2a4a;
-  --sl-color-text-accent: #4a6fa5;
+:root,
+:root[data-theme="light"],
+:root[data-theme="dark"] {
+  /* Accent */
+  --sl-color-accent-low: #1a1f35;
+  --sl-color-accent: #8b9cf7;
+  --sl-color-accent-high: #c4ccff;
+  --sl-color-text-accent: #a4b4ff;
+
+  /* Backgrounds */
+  --sl-color-bg-nav: #0d0d0f;
+  --sl-color-bg-sidebar: #111114;
+  --sl-color-bg: #141417;
+  --sl-color-bg-inline-code: #1e1e24;
+
+  /* Text */
+  --sl-color-white: #ededef;
+  --sl-color-gray-1: #c8c8cc;
+  --sl-color-gray-2: #9a9aa0;
+  --sl-color-gray-3: #6e6e76;
+  --sl-color-gray-4: #3a3a42;
+  --sl-color-gray-5: #24242a;
+  --sl-color-gray-6: #18181c;
+  --sl-color-black: #0d0d0f;
+
+  /* Borders */
+  --sl-color-hairline-light: #1e1e24;
+  --sl-color-hairline: #2a2a32;
+
+  /* Font */
+  --sl-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --sl-font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", "Fira Code", Menlo, monospace;
+
+  /* Sizing */
+  --sl-text-base: 0.9375rem;
+  --sl-text-sm: 0.8125rem;
+  --sl-text-xs: 0.75rem;
+  --sl-line-height: 1.7;
+  --sl-content-width: 50rem;
+  --sl-sidebar-width: 16rem;
+}
+
+/* ── Global ──────────────────────────────────────────────────────────── */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────── */
+
+starlight-menu-button + nav {
+  font-size: var(--sl-text-sm);
+}
+
+.sidebar-content a[aria-current="page"] {
+  font-weight: 600;
+  border-left: 2px solid var(--sl-color-accent);
+  padding-left: calc(0.5rem - 2px);
+  background: var(--sl-color-accent-low);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Sidebar group labels */
+.sidebar-content summary,
+.sidebar-content .top-level > li > details > summary {
+  text-transform: uppercase;
+  font-size: var(--sl-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--sl-color-gray-2);
+}
+
+/* ── Content ─────────────────────────────────────────────────────────── */
+
+/* Headings */
+.sl-markdown-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid var(--sl-color-hairline-light);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.sl-markdown-content h2 {
+  font-size: 1.375rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  margin-top: 2.5rem;
+  border-bottom: 1px solid var(--sl-color-hairline-light);
+  padding-bottom: 0.5rem;
+}
+
+.sl-markdown-content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 2rem;
+}
+
+/* Inline code */
+.sl-markdown-content :not(pre) > code {
+  background: var(--sl-color-bg-inline-code);
+  border: 1px solid var(--sl-color-hairline-light);
+  border-radius: 4px;
+  padding: 0.15em 0.35em;
+  font-size: 0.85em;
+  font-weight: 450;
+  color: var(--sl-color-accent-high);
+}
+
+/* Code blocks */
+.sl-markdown-content pre {
+  border: 1px solid var(--sl-color-hairline-light);
+  border-radius: 8px;
+  background: #0d0d0f !important;
+}
+
+.expressive-code .frame {
+  border: 1px solid var(--sl-color-hairline-light);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.expressive-code pre {
+  border: none;
+  border-radius: 0;
+}
+
+/* Links */
+.sl-markdown-content a:not(.heading-link) {
+  color: var(--sl-color-text-accent);
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s;
+}
+
+.sl-markdown-content a:not(.heading-link):hover {
+  text-decoration-color: var(--sl-color-text-accent);
+}
+
+/* Tables */
+.sl-markdown-content table {
+  border: 1px solid var(--sl-color-hairline-light);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: var(--sl-text-sm);
+}
+
+.sl-markdown-content th {
+  background: var(--sl-color-gray-6);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: var(--sl-text-xs);
+  letter-spacing: 0.05em;
+  color: var(--sl-color-gray-2);
+}
+
+.sl-markdown-content td,
+.sl-markdown-content th {
+  border-color: var(--sl-color-hairline-light);
+  padding: 0.625rem 0.875rem;
+}
+
+.sl-markdown-content tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* Blockquotes / Asides */
+.starlight-aside {
+  border-radius: 8px;
+  border-width: 1px;
+  border-left-width: 3px;
+}
+
+/* Lists */
+.sl-markdown-content ul,
+.sl-markdown-content ol {
+  padding-left: 1.25rem;
+}
+
+.sl-markdown-content li {
+  margin-top: 0.375rem;
+}
+
+/* ── Hero / Splash page ──────────────────────────────────────────────── */
+
+.hero h1 {
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em;
+  background: linear-gradient(to bottom, #fff 30%, #9a9aa0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero .tagline {
+  color: var(--sl-color-gray-2) !important;
+  font-size: 1.1rem !important;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+
+header.header {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--sl-color-hairline-light);
+}
+
+/* Site title */
+.site-title {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+/* ── Table of Contents ───────────────────────────────────────────────── */
+
+starlight-toc a {
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-3);
+  transition: color 0.15s;
+}
+
+starlight-toc a:hover,
+starlight-toc a[aria-current="true"] {
+  color: var(--sl-color-white);
+}
+
+/* ── Search ──────────────────────────────────────────────────────────── */
+
+dialog[aria-label="Search"] {
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 12px;
+  background: var(--sl-color-bg-sidebar);
+}
+
+/* ── Pagination ──────────────────────────────────────────────────────── */
+
+.pagination-links a {
+  border: 1px solid var(--sl-color-hairline-light);
+  border-radius: 8px;
+  transition: border-color 0.15s;
+}
+
+.pagination-links a:hover {
+  border-color: var(--sl-color-accent);
+}
+
+/* ── Cards (Starlight components) ────────────────────────────────────── */
+
+.card {
+  border: 1px solid var(--sl-color-hairline-light);
+  border-radius: 8px;
+  background: var(--sl-color-bg-sidebar);
+}
+
+.card:hover {
+  border-color: var(--sl-color-hairline);
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sl-color-gray-4);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sl-color-gray-3);
 }
