@@ -15,43 +15,23 @@ export default defineConfig({
       sidebar: [
         {
           label: "Getting Started",
-          items: [
-            { label: "Introduction", slug: "" },
-            { label: "Installation", slug: "getting-started/installation" },
-            { label: "Quickstart", slug: "getting-started/quickstart" },
-            { label: "Core Concepts", slug: "getting-started/concepts" },
-          ],
+          autogenerate: { directory: "getting-started" },
         },
         {
           label: "CLI",
-          items: [
-            { label: "Overview", slug: "cli/overview" },
-            { label: "Commands", slug: "cli/commands" },
-          ],
+          autogenerate: { directory: "cli" },
         },
         {
           label: "API Reference",
-          items: [
-            { label: "Overview", slug: "api/overview" },
-            { label: "Repositories", slug: "api/repositories" },
-            { label: "Context Query", slug: "api/context" },
-            { label: "Indexing", slug: "api/indexing" },
-          ],
+          autogenerate: { directory: "api" },
         },
         {
           label: "Integrations",
-          items: [
-            { label: "MCP Server", slug: "integrations/mcp" },
-            { label: "VS Code", slug: "integrations/vscode" },
-            { label: "GitHub App", slug: "integrations/github" },
-          ],
+          autogenerate: { directory: "integrations" },
         },
         {
           label: "Guides",
-          items: [
-            { label: "Team Context", slug: "guides/team-context" },
-            { label: "Self-Hosting", slug: "guides/self-hosting" },
-          ],
+          autogenerate: { directory: "guides" },
         },
       ],
       customCss: ["./src/styles/custom.css"],
